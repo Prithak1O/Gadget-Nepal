@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gadget Nepal</title>
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Anton+SC&family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Poetsen+One&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+    rel="stylesheet">
+</head>
+
+<body>
+
+  <nav>
+    <div class="navbar">
+      <a href="index.html" class="logo">Gadget-Nepal</a>
+
+      <div class="hamburger" onclick="toggleMenu()">
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+
+      <div class="nav-content" id="navContent">
+        <div class="nav-links">
+          <a href="index.html">Home</a>
+          <a href="shop.html">Catalog</a>
+          <a href="#">Contact</a>
+        </div>
+
+        <div class="search-container">
+          <input type="text" placeholder="Search gadgets..." />
+          <button class="search-btn"><i class="fa-solid fa-magnifying-glass"></i></button>
+        </div>
+
+        <div class="icons" style="position: relative;">
+          <!-- Cart Icon with Count -->
+          <a href="cart.html" class="icon-btn" title="Cart" style="position: relative;">
+            <i class="fa-solid fa-cart-shopping"></i>
+            <span id="cart-count"
+              style="background:red;color:white;border-radius:50%;padding:2px 6px;font-size:12px;position:absolute;top:-5px;right:-10px;">0</span>
+          </a>
+
+          <!-- Profile Icon -->
+          <a href="user.html">
+            <button class="icon-btn" title="Profile"><i class="fa-solid fa-user"></i></button>
+          </a>
+        </div>
+
+
+      </div>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-head">
+      <h1>Check Quality, Not Quantity</h1>
+      <button>Explore Now</button>
+    </div>
+  </section>
+  <section class="Collections">
+    <div class="head-col">
+      <h1>Top Collections</h1>
+      <p>Choose the product, quality that comes with it.</p>
+    </div>
+    <div class="products" id="product-list">
+      <!-- JS will inject product cards here -->
+    </div>
+    <a href="shop.html" id="see-more-btn">See More</a>
+
+  </section>
+  <footer class="site-footer">
+    <div class="footer-container">
+      <!-- Top Feature Boxes -->
+      <div class="footer-features">
+        <div class="feature-box">
+          <i class="fa-solid fa-box"></i>
+          <h3>Fast Processing</h3>
+          <p>Orders are processed quickly so you get your products faster.</p>
+        </div>
+        <div class="feature-box">
+          <i class="fa-solid fa-rotate-left"></i>
+          <h3>Easy Returns</h3>
+          <p>Hassle-free returns within 14 days. Items must be in original condition.</p>
+        </div>
+        <div class="feature-box">
+          <i class="fa-solid fa-headset"></i>
+          <h3>Support 24/7</h3>
+          <p>Reach out to us any time, we’re available around the clock.</p>
+        </div>
+        <div class="feature-box">
+          <i class="fa-solid fa-shield-alt"></i>
+          <h3>Secure Payments</h3>
+          <p>Shop confidently with our secure and encrypted payment options.</p>
+        </div>
+        <div class="feature-box">
+          <i class="fa-solid fa-tags"></i>
+          <h3>Best Price Guarantee</h3>
+          <p>Find a better price? We’ll match it for you.</p>
+        </div>
+        <div class="feature-box">
+          <i class="fa-solid fa-truck-fast"></i>
+          <h3>Express Shipping</h3>
+          <p>Get your order quickly with our affordable express shipping options.</p>
+        </div>
+      </div>
+
+
+      <!-- Middle Footer Content -->
+      <div class="footer-main">
+        <!-- Company Info -->
+        <div class="footer-logo">
+          <div class="logo">Gadget-Nepal</div>
+          <p>Your go-to gadget and accessories store with unbeatable value.</p>
+          <p><i class="fa-solid fa-location-dot"></i> :- Biratnagar-3, Morang, Nepal</p>
+          <p><i class="fa-solid fa-phone"></i> :- 9849048162</p>
+          <p><i class="fa-solid fa-envelope"></i> :- gadget.nepal@gmail.com</p>
+
+        </div>
+
+        <!-- Quick Links -->
+        <div class="footer-links">
+          <h4>Quick Links</h4>
+          <ul>
+            <li><a href="#">Home</a></li>
+            <li><a href="#">Catalog</a></li>
+            <li><a href="#">Contact</a></li>
+          </ul>
+        </div>
+
+        <!-- Social Media -->
+        <div class="footer-social">
+          <h4>Follow Us</h4>
+          <div class="social-icons">
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Copyright -->
+      <div class="footer-bottom">
+        <p>&copy; 2025 Gadget-Nepal. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+
+
+
+
+  <script src="/js/script.js"></script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-database.js";
+
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyBNCTc5RIZoPWM10DbrQLT8u9npPoNDyWM",
+      authDomain: "gadget-nepal-2f95b.firebaseapp.com",
+      projectId: "gadget-nepal-2f95b",
+      storageBucket: "gadget-nepal-2f95b.firebasestorage.app",
+      messagingSenderId: "467012972292",
+      appId: "1:467012972292:web:ca9ec2130c23b2ee56aa51",
+      measurementId: "G-ZRX261G3CT"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    // ===========================
+    // CART COUNT (top-right icon)
+    // ===========================
+    const cartCountEl = document.getElementById('cart-count');
+    const cartRef = ref(db, 'cart');
+
+    onValue(cartRef, (snapshot) => {
+      const cartData = snapshot.val();
+      const count = cartData ? Object.keys(cartData).length : 0;
+      cartCountEl.textContent = count;
+    });
+
+    // ===========================
+    // PRODUCT LISTING (Top Collections)
+    // ===========================
+    const productsRef = ref(db, 'products');
+    const productContainer = document.querySelector('.products');
+
+    let allProducts = [];
+
+    function getVisibleProductCount() {
+      const width = window.innerWidth;
+      if (width <= 600) return 4;
+      if (width <= 768) return 6;
+      return 8;
+    }
+
+    function displayProducts() {
+      const productCount = getVisibleProductCount();
+      const limitedProducts = allProducts.slice(0, productCount);
+
+      productContainer.innerHTML = '';
+      limitedProducts.forEach(([id, product]) => {
+        const productHTML = `
+        <div class="product-container">
+          <img src="${product.image}" alt="${product.name}" />
+          <h3>${product.name}</h3>
+          <p>Rs ${product.price}.00 NPR</p>
+          <button onclick="addToCart('${id}')">Add to cart</button>
+        </div>
+      `;
+        productContainer.innerHTML += productHTML;
+      });
+    }
+
+    onValue(productsRef, (snapshot) => {
+      const data = snapshot.val();
+      if (!data) return;
+
+      allProducts = Object.entries(data);
+      displayProducts();
+    });
+
+    window.addEventListener('resize', () => {
+      displayProducts();
+    });
+
+    // ===========================
+    // Add to Cart Functionality
+    // ===========================
+    window.addToCart = function (productId) {
+      const product = allProducts.find(([id]) => id === productId);
+      if (!product) return;
+
+      const cartRef = ref(db, `cart/${productId}`);
+      const cartItem = {
+        ...product[1],
+        addedAt: Date.now()
+      };
+      // Update the cart
+      import("https://www.gstatic.com/firebasejs/10.10.0/firebase-database.js").then(({ set }) => {
+        set(cartRef, cartItem);
+      });
+    };
+  </script>
+  <script>
+    document.querySelector('.search-btn').addEventListener('click', () => {
+      const searchInput = document.querySelector('.search-container input').value.trim();
+      if (searchInput) {
+        window.location.href = `shop.html?search=${encodeURIComponent(searchInput)}`;
+      }
+    });
+  </script>
+  <script>
+    const inputEl = document.querySelector('.search-container input');
+    inputEl.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        document.querySelector('.search-btn').click();
+      }
+    });
+  </script>
+
+
+
+
+
+</body>
+
+</html>

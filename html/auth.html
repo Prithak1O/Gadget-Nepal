@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login | Gadget Nepal</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+  <style>
+    body {
+      background: linear-gradient(to right, #3498db, #2c3e50);
+      color: white;
+      font-family: "Roboto", sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .auth-container {
+      background-color: white;
+      color: #333;
+      padding: 2rem;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+    }
+
+    .auth-container h2 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .auth-container form {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .auth-container input {
+      padding: 10px;
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+
+    .auth-container button {
+      padding: 10px;
+      background-color: #3498db;
+      color: white;
+      font-size: 1rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .auth-container button:hover {
+      background-color: #2980b9;
+    }
+
+    .toggle-link {
+      margin-top: 1rem;
+      text-align: center;
+      cursor: pointer;
+      color: #3498db;
+      font-size: 0.95rem;
+    }
+
+    .social-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 1rem;
+    }
+
+    .social-buttons button {
+      background-color: #4267B2;
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    .google-btn {
+      background-color: #DB4437;
+    }
+
+    .error-message {
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: red;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="auth-container">
+    <h2 id="form-title">Login</h2>
+    <form id="auth-form">
+      <input type="text" id="name" placeholder="Name" style="display:none;" />
+      <input type="email" id="email" placeholder="Email" required />
+      <input type="password" id="password" placeholder="Password" required />
+      <button type="submit" id="submit-btn">Login</button>
+    </form>
+    <p class="toggle-link" id="toggle-link">Don't have an account? Sign Up</p>
+
+    <div class="social-buttons">
+      <button class="google-btn" onclick="googleLogin()">Continue with Google</button>
+    </div>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBNCTc5RIZoPWM10DbrQLT8u9npPoNDyWM",
+      authDomain: "gadget-nepal-2f95b.firebaseapp.com",
+      databaseURL: "https://gadget-nepal-2f95b-default-rtdb.firebaseio.com",
+      projectId: "gadget-nepal-2f95b",
+      storageBucket: "gadget-nepal-2f95b.appspot.com",
+      messagingSenderId: "467012972292",
+      appId: "1:467012972292:web:ca9ec2130c23b2ee56aa51",
+      measurementId: "G-ZRX261G3CT"
+    };
+    firebase.initializeApp(firebaseConfig);
+
+    const auth = firebase.auth();
+    const db = firebase.database();
+
+    let isLogin = true;
+
+    const formTitle = document.getElementById('form-title');
+    const toggleLink = document.getElementById('toggle-link');
+    const submitBtn = document.getElementById('submit-btn');
+    const form = document.getElementById('auth-form');
+    const nameInput = document.getElementById('name');
+
+    const showError = (message) => {
+      const existingError = document.querySelector(".error-message");
+      if (existingError) existingError.remove();
+
+      const p = document.createElement("p");
+      p.className = "error-message";
+      p.textContent = message;
+      form.appendChild(p);
+    };
+
+    toggleLink.addEventListener('click', () => {
+      isLogin = !isLogin;
+      nameInput.style.display = isLogin ? 'none' : 'block';
+      formTitle.innerText = isLogin ? 'Login' : 'Sign Up';
+      submitBtn.innerText = isLogin ? 'Login' : 'Sign Up';
+      toggleLink.innerText = isLogin
+        ? "Don't have an account? Sign Up"
+        : "Already have an account? Login";
+
+      const existingError = document.querySelector(".error-message");
+      if (existingError) existingError.remove();
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const name = document.getElementById('name').value.trim();
+
+      const isGmail = /^[a-zA-Z0-9._%+-]+@gmail\.com$/.test(email);
+
+      if (!isGmail) {
+        showError("Please use a valid Gmail address.");
+        return;
+      }
+
+      if (isLogin) {
+        try {
+          const snapshot = await db.ref('users').orderByChild('email').equalTo(email).once('value');
+          if (!snapshot.exists()) {
+            showError("Account not found. Please sign up first.");
+            return;
+          }
+
+          const userCredential = await auth.signInWithEmailAndPassword(email, password);
+          const uid = userCredential.user.uid;
+
+          const userSnap = await db.ref('users/' + uid).once('value');
+          if (!userSnap.exists()) {
+            showError("User not found in database.");
+            return;
+          }
+
+          localStorage.setItem('loggedInUser', JSON.stringify({ uid, email }));
+          window.location.href = 'user.html';
+        } catch (error) {
+          showError("Incorrect email or password.");
+        }
+      } else {
+        if (!name) {
+          showError("Please enter your name.");
+          return;
+        }
+
+        try {
+          const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+          const uid = userCredential.user.uid;
+          await db.ref('users/' + uid).set({ name, email });
+
+          toggleLink.click(); // switch to login view
+          showError("Signup successful! You can now log in.");
+        } catch (error) {
+          showError("Signup failed. Try a different email or stronger password.");
+        }
+      }
+    });
+
+    function googleLogin() {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      auth.signInWithPopup(provider)
+        .then((result) => {
+          const user = result.user;
+          const userRef = db.ref('users/' + user.uid);
+
+          userRef.once('value').then(snapshot => {
+            if (!snapshot.exists()) {
+              userRef.set({
+                name: user.displayName,
+                email: user.email
+              });
+            }
+          });
+
+          localStorage.setItem('loggedInUser', JSON.stringify({ uid: user.uid, email: user.email }));
+          window.location.href = 'user.html';
+        })
+        .catch((error) => {
+          showError("Google login failed. Try again.");
+        });
+    }
+  </script>
+</body>
+</html>

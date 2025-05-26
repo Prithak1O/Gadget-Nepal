@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Shop - Gadget Nepal</title>
+    <link rel="stylesheet" href="/css/style.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Anton+SC&family=Noto+Sans:wght@100..900&family=Poetsen+One&family=Roboto:wght@100..900&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            background: rgba(186, 210, 246, 0.4);
+        }
+
+        #suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #ccc;
+            z-index: 999;
+            display: none;
+        }
+
+        .suggestion {
+            padding: 8px;
+            cursor: pointer;
+        }
+
+        .suggestion:hover,
+        .suggestion.active {
+            background-color: #f0f0f0;
+        }
+
+        .product-container {
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 8px;
+            background: white;
+            margin: 10px;
+            text-align: center;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .products {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 0 20px;
+        }
+
+        .product-container img {
+            width: 100%;
+            height: 180px;
+            object-fit: contain;
+        }
+
+        .product-container button {
+            margin-top: 10px;
+            padding: 5px 10px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .product-container button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <div class="navbar">
+            <a href="index.html" class="logo">Gadget-Nepal</a>
+            <div class="hamburger" onclick="toggleMenu()">
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+            <div class="nav-content" id="navContent">
+                <div class="nav-links">
+                    <a href="index.html">Home</a>
+                    <a href="shop.html" class="active">Catalog</a>
+                    <a href="#">Contact</a>
+                </div>
+                <div class="search-container" style="position: relative;">
+                    <input type="text" placeholder="Search gadgets..." id="searchInput" autocomplete="off" />
+                    <button class="search-btn" onclick="triggerSearch()">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+                    <div id="suggestions"></div>
+                </div>
+                <div class="icons">
+                    <a href="cart.html" class="icon-btn" title="Cart" style="position: relative;">
+                        <i class="fa-solid fa-cart-shopping"></i>
+                        <span id="cart-count"
+                            style="background:red;color:white;border-radius:50%;padding:2px 6px;font-size:12px;position:absolute;top:-5px;right:-10px;">0</span>
+                    </a>
+                    <a href="user.html" class="icon-btn" title="Profile"><i class="fa-solid fa-user"></i></a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <section class="Collections">
+            <div class="head-col">
+                <h1>Our Products</h1>
+                <p>Discover top gadgets curated for you!</p>
+            </div>
+            <div class="products" id="product-list"></div>
+            <div id="pagination-buttons" style="text-align:center; margin: 20px;">
+                <button id="see-more-btn">Show More</button>
+                <button id="show-less-btn" style="display:none;">Show Less</button>
+            </div>
+        </section>
+    </main>
+
+    <hr>
+
+    <footer>
+        <div class="footer-main" style="padding: 1% 2%;">
+            <div class="footer-logo">
+                <div class="logo">Gadget-Nepal</div>
+                <p>Your go-to gadget and accessories store with unbeatable value.</p>
+                <p><i class="fa-solid fa-location-dot"></i> :- Biratnagar-3, Morang, Nepal</p>
+                <p><i class="fa-solid fa-phone"></i> :- 9849048162</p>
+                <p><i class="fa-solid fa-envelope"></i> :- gadget.nepal@gmail.com</p>
+            </div>
+            <div class="footer-links">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="shop.html">Catalog</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-social">
+                <h4>Follow Us</h4>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Gadget-Nepal. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
+        import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBNCTc5RIZoPWM10DbrQLT8u9npPoNDyWM",
+            authDomain: "gadget-nepal-2f95b.firebaseapp.com",
+            projectId: "gadget-nepal-2f95b",
+            storageBucket: "gadget-nepal-2f95b.appspot.com",
+            messagingSenderId: "467012972292",
+            appId: "1:467012972292:web:ca9ec2130c23b2ee56aa51",
+            measurementId: "G-ZRX261G3CT"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        const cartCountEl = document.getElementById('cart-count');
+        const productContainer = document.getElementById('product-list');
+        const searchInput = document.getElementById('searchInput');
+        const suggestionsBox = document.getElementById('suggestions');
+        const seeMoreBtn = document.getElementById('see-more-btn');
+        const showLessBtn = document.getElementById('show-less-btn');
+
+        let allProducts = [];
+        let visibleProductCount = 0;
+        let selectedSuggestionIndex = -1;
+
+        const getVisibleProductStep = () => window.innerWidth <= 600 ? 4 : window.innerWidth <= 768 ? 6 : 8;
+
+        function renderProducts(products) {
+            if (!products.length) {
+                productContainer.innerHTML = `<div style="text-align:center; padding:20px;"><i class="fa fa-search" style="font-size:40px; color:gray;"></i><p style="font-size:18px; margin-top:10px;">No results found</p></div>`;
+                seeMoreBtn.style.display = 'none';
+                showLessBtn.style.display = 'none';
+                return;
+            }
+
+            visibleProductCount = Math.min(visibleProductCount || getVisibleProductStep(), products.length);
+            productContainer.innerHTML = products.slice(0, visibleProductCount).map(([id, p]) => `
+            <div class="product-container">
+                <img src="${p.image}" alt="${p.name}" />
+                <h3>${p.name}</h3>
+                <p>Rs ${p.price}.00 NPR</p>
+                <button onclick="addToCart('${id}')">Add to cart</button>
+            </div>
+        `).join('');
+
+            seeMoreBtn.style.display = visibleProductCount < products.length ? 'inline-block' : 'none';
+            showLessBtn.style.display = visibleProductCount > getVisibleProductStep() ? 'inline-block' : 'none';
+        }
+
+        function handleSearch(query) {
+            query = query.toLowerCase().trim();
+            if (!query) {
+                visibleProductCount = getVisibleProductStep();
+                renderProducts(allProducts);
+                return;
+            }
+            const results = allProducts.filter(([id, p]) =>
+                (p.name + p.description + (p.type || '')).toLowerCase().includes(query)
+            );
+            visibleProductCount = getVisibleProductStep();
+            renderProducts(results);
+        }
+
+        function showSuggestions(query) {
+            query = query.toLowerCase();
+            const matches = allProducts.filter(([id, p]) =>
+                (p.name + p.description + (p.type || '')).toLowerCase().includes(query)
+            ).slice(0, 5);
+
+            suggestionsBox.innerHTML = matches.map(([id, p], i) =>
+                `<div class="suggestion ${i === selectedSuggestionIndex ? 'active' : ''}" data-name="${p.name}">${p.name}</div>`
+            ).join('');
+            suggestionsBox.style.display = matches.length ? 'block' : 'none';
+
+            // Add click event to each suggestion
+            document.querySelectorAll('.suggestion').forEach(suggestion => {
+                suggestion.addEventListener('click', (e) => {
+                    const name = e.target.getAttribute('data-name');
+                    searchInput.value = name;
+                    suggestionsBox.style.display = 'none';
+                    handleSearch(name);
+                });
+            });
+        }
+
+        function triggerSearch() {
+            const val = searchInput.value.trim();
+            window.location.href = `shop.html?search=${encodeURIComponent(val)}`;
+        }
+
+        searchInput.addEventListener('input', (e) => {
+            const val = e.target.value;
+            selectedSuggestionIndex = -1;
+            showSuggestions(val);
+            handleSearch(val);
+        });
+
+        searchInput.addEventListener('keydown', (e) => {
+            const suggestions = suggestionsBox.querySelectorAll('.suggestion');
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                selectedSuggestionIndex = (selectedSuggestionIndex + 1) % suggestions.length;
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                selectedSuggestionIndex = (selectedSuggestionIndex - 1 + suggestions.length) % suggestions.length;
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                if (selectedSuggestionIndex >= 0) {
+                    searchInput.value = suggestions[selectedSuggestionIndex].textContent;
+                    suggestionsBox.style.display = 'none';
+                }
+                handleSearch(searchInput.value);
+            }
+            suggestions.forEach((s, i) => s.classList.toggle('active', i === selectedSuggestionIndex));
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.search-container')) suggestionsBox.style.display = 'none';
+        });
+
+        seeMoreBtn.addEventListener('click', () => {
+            visibleProductCount += getVisibleProductStep();
+            renderProducts(allProducts);
+        });
+
+        showLessBtn.addEventListener('click', () => {
+            visibleProductCount = getVisibleProductStep();
+            renderProducts(allProducts);
+        });
+
+        onValue(ref(db, 'products'), (snapshot) => {
+            const data = snapshot.val();
+            if (!data) return;
+            allProducts = Object.entries(data);
+            const urlParams = new URLSearchParams(window.location.search);
+            const searchQuery = urlParams.get('search')?.toLowerCase() || '';
+            searchInput.value = searchQuery;
+            handleSearch(searchQuery);
+        });
+
+        onValue(ref(db, 'cart'), (snapshot) => {
+            const cart = snapshot.val();
+            cartCountEl.textContent = cart ? Object.keys(cart).length : 0;
+        });
+
+        window.addToCart = function (productId) {
+            const product = allProducts.find(([id]) => id === productId);
+            if (product) {
+                const cartRef = ref(db, `cart/${productId}`);
+                set(cartRef, { ...product[1], addedAt: Date.now() });
+            }
+        };
+    </script>
+
+  <script src="/js/script.js"></script>
+
+</body>
+
+</html>

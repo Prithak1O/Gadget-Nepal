@@ -191,55 +191,55 @@
   </div>
 
   <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
-  import { getDatabase, ref, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-database.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
+    import { getDatabase, ref, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-database.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyBNCTc5RIZoPWM10DbrQLT8u9npPoNDyWM",
-    authDomain: "gadget-nepal-2f95b.firebaseapp.com",
-    projectId: "gadget-nepal-2f95b",
-    storageBucket: "gadget-nepal-2f95b.appspot.com",
-    messagingSenderId: "467012972292",
-    appId: "1:467012972292:web:ca9ec2130c23b2ee56aa51",
-    measurementId: "G-ZRX261G3CT",
-    databaseURL: "https://gadget-nepal-2f95b-default-rtdb.firebaseio.com"
-  };
+    const firebaseConfig = {
+      apiKey: "AIzaSyBNCTc5RIZoPWM10DbrQLT8u9npPoNDyWM",
+      authDomain: "gadget-nepal-2f95b.firebaseapp.com",
+      projectId: "gadget-nepal-2f95b",
+      storageBucket: "gadget-nepal-2f95b.appspot.com",
+      messagingSenderId: "467012972292",
+      appId: "1:467012972292:web:ca9ec2130c23b2ee56aa51",
+      measurementId: "G-ZRX261G3CT",
+      databaseURL: "https://gadget-nepal-2f95b-default-rtdb.firebaseio.com"
+    };
 
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
-  const cartRef = ref(db, 'cart');
-  const cartItemsDiv = document.getElementById('cartItems');
-  const subtotalEl = document.getElementById('subtotal');
-  const totalEl = document.getElementById('total');
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const cartRef = ref(db, 'cart');
+    const cartItemsDiv = document.getElementById('cartItems');
+    const subtotalEl = document.getElementById('subtotal');
+    const totalEl = document.getElementById('total');
 
-  function calculateShippingFee(totalQty) {
-    if (totalQty <= 0) return 0;
-    return 100 + Math.floor((totalQty - 1) / 2) * 50;
-  }
+    function calculateShippingFee(totalQty) {
+      if (totalQty <= 0) return 0;
+      return 100 + Math.floor((totalQty - 1) / 2) * 50;
+    }
 
-  function updateCart() {
-    onValue(cartRef, (snapshot) => {
-      const cartData = snapshot.val();
-      cartItemsDiv.innerHTML = '';
-      let subtotal = 0;
-      let totalQty = 0;
+    function updateCart() {
+      onValue(cartRef, (snapshot) => {
+        const cartData = snapshot.val();
+        cartItemsDiv.innerHTML = '';
+        let subtotal = 0;
+        let totalQty = 0;
 
-      if (!cartData) {
-        cartItemsDiv.innerHTML = '<p>Your cart is empty.</p>';
-        subtotalEl.textContent = 'Rs 0.00';
-        document.querySelector(".summary p:nth-child(3) span:last-child").textContent = 'Rs 0.00';
-        totalEl.textContent = 'Rs 0.00 NPR';
-        return;
-      }
+        if (!cartData) {
+          cartItemsDiv.innerHTML = '<p>Your cart is empty.</p>';
+          subtotalEl.textContent = 'Rs 0.00';
+          document.querySelector(".summary p:nth-child(3) span:last-child").textContent = 'Rs 0.00';
+          totalEl.textContent = 'Rs 0.00 NPR';
+          return;
+        }
 
-      Object.entries(cartData).forEach(([id, product]) => {
-        const price = parseFloat(product.price.toString().replace(/,/g, ''));
-        const qty = parseInt(product.quantity || 1);
-        const itemTotal = price * qty;
-        subtotal += itemTotal;
-        totalQty += qty;
+        Object.entries(cartData).forEach(([id, product]) => {
+          const price = parseFloat(product.price.toString().replace(/,/g, ''));
+          const qty = parseInt(product.quantity || 1);
+          const itemTotal = price * qty;
+          subtotal += itemTotal;
+          totalQty += qty;
 
-        const itemHTML = `
+          const itemHTML = `
           <div class="cart-item">
             <img src="${product.image}" alt="${product.name}" />
             <div class="cart-item-details">
@@ -254,35 +254,35 @@
             <button class="remove-btn" onclick="removeItem('${id}')">Remove</button>
           </div>
         `;
-        cartItemsDiv.innerHTML += itemHTML;
+          cartItemsDiv.innerHTML += itemHTML;
+        });
+
+        const shippingFee = calculateShippingFee(totalQty);
+        const total = subtotal + shippingFee;
+
+        subtotalEl.textContent = `Rs ${subtotal.toLocaleString()}`;
+        document.querySelector(".summary p:nth-child(3) span:last-child").textContent = `Rs ${shippingFee.toLocaleString()}`;
+        totalEl.textContent = `Rs ${total.toLocaleString()} NPR`;
       });
+    }
 
-      const shippingFee = calculateShippingFee(totalQty);
-      const total = subtotal + shippingFee;
+    // Update quantity in Firebase
+    window.updateQuantity = function (id, newQty) {
+      if (newQty < 1) return;
+      const itemRef = ref(db, `cart/${id}`);
+      update(itemRef, { quantity: newQty });
+    };
 
-      subtotalEl.textContent = `Rs ${subtotal.toLocaleString()}`;
-      document.querySelector(".summary p:nth-child(3) span:last-child").textContent = `Rs ${shippingFee.toLocaleString()}`;
-      totalEl.textContent = `Rs ${total.toLocaleString()} NPR`;
-    });
-  }
+    // Remove item from cart
+    window.removeItem = function (id) {
+      const itemRef = ref(db, `cart/${id}`);
+      remove(itemRef).then(() => {
+        console.log('Item removed from cart.');
+      });
+    };
 
-  // Update quantity in Firebase
-  window.updateQuantity = function (id, newQty) {
-    if (newQty < 1) return;
-    const itemRef = ref(db, `cart/${id}`);
-    update(itemRef, { quantity: newQty });
-  };
-
-  // Remove item from cart
-  window.removeItem = function (id) {
-    const itemRef = ref(db, `cart/${id}`);
-    remove(itemRef).then(() => {
-      console.log('Item removed from cart.');
-    });
-  };
-
-  updateCart();
-</script>
+    updateCart();
+  </script>
 
 
 </body>

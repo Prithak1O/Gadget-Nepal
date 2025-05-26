@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gadget Nepal - User Profile</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Anton+SC&family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Poetsen+One&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+    rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: #f0f2f5;
+      color: #2c3e50;
+    }
+
+    .logo {
+      font-size: 1.6rem;
+      font-weight: 700;
+      text-decoration: none;
+      color: #2c3e50;
+      font-family: "Anton SC", sans-serif;
+      transition: color 0.3s ease;
+    }
+
+    .logo:hover {
+      color: #2980b9;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 2rem auto;
+      padding: 2rem;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+      position: relative;
+    }
+
+    .header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    h2 {
+      font-weight: 700;
+    }
+
+    .settings-btn {
+      background: #3498db;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 0.5rem 1.2rem;
+      cursor: pointer;
+      font-size: 0.9rem;
+      margin: 0.2rem;
+    }
+
+    .settings-btn:hover {
+      background-color: #2980b9;
+    }
+
+    .profile-section {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      align-items: center;
+      margin: 2rem 0;
+    }
+
+    .profile-img-wrapper {
+      position: relative;
+      width: 120px;
+      height: 120px;
+    }
+
+    .profile-img-wrapper input[type="file"] {
+      display: none;
+    }
+
+    .profile-img-wrapper label {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      background: #3498db;
+      color: white;
+      border-radius: 50%;
+      padding: 5px;
+      cursor: pointer;
+    }
+
+    .profile-img-wrapper img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 4px solid #3498db;
+      object-fit: cover;
+    }
+
+    .info input {
+      font-size: 1rem;
+      padding: 0.5rem;
+      margin: 0.4rem 0 1rem 0;
+      width: 100%;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    .info label {
+      font-weight: 500;
+    }
+
+    .info button {
+      padding: 0.6rem 1.5rem;
+      background-color: #27ae60;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 0.5rem;
+    }
+
+    .info button:hover {
+      background-color: #219150;
+    }
+
+    .delete-btn {
+      background-color: #e74c3c;
+      margin-top: 2rem;
+    }
+
+    .delete-btn:hover {
+      background-color: #c0392b;
+    }
+
+    .settings-panel {
+      display: none;
+      flex-direction: column;
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .password-strength {
+      font-size: 0.9rem;
+      margin-top: -0.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .orders {
+      margin-top: 3rem;
+    }
+
+    .orders ul {
+      list-style: none;
+    }
+
+    .orders li {
+      background: #f9f9f9;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      border-left: 4px solid #3498db;
+    }
+
+    .orders strong {
+      color: #3498db;
+    }
+
+    .message-box {
+      margin-top: 1rem;
+      font-size: 0.95rem;
+      padding: 0.8rem 1rem;
+      border-radius: 6px;
+      display: none;
+    }
+
+    .message-box.success {
+      background-color: #dff0d8;
+      color: #3c763d;
+    }
+
+    .message-box.error {
+      background-color: #f2dede;
+      color: #a94442;
+    }
+
+    @media (max-width: 600px) {
+      .profile-section {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+
+    /* Confirm Modal */
+    .confirm-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .confirm-box {
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+      text-align: center;
+    }
+
+    .confirm-box h3 {
+      margin-bottom: 1rem;
+      color: #2c3e50;
+    }
+
+    .confirm-box button {
+      margin: 0 1rem;
+      padding: 0.6rem 1.2rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .confirm-yes {
+      background-color: #e74c3c;
+      color: white;
+    }
+
+    .confirm-no {
+      background-color: #bdc3c7;
+      color: black;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <a href="index.html" class="logo">Gadget-Nepal</a>
+      <h2><i class="fas fa-user-circle"></i> User Profile</h2>
+      <div>
+        <button class="settings-btn" id="settingsBtn"><i class="fas fa-cog"></i> Settings</button>
+        <button class="settings-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+      </div>
+    </div>
+
+    <!-- Profile -->
+    <div class="profile-section">
+      <div class="profile-img-wrapper">
+        <img id="userImage" src="/assests/user.png" alt="Profile" />
+        <label for="uploadImg"><i class="fas fa-camera"></i></label>
+        <input type="file" id="uploadImg" accept="image/*" />
+      </div>
+      <div>
+        <p><strong><i class="fas fa-user"></i> Name:</strong> <span id="displayName">Loading...</span></p>
+        <p><strong><i class="fas fa-envelope"></i> Email:</strong> <span id="displayEmail">Loading...</span></p>
+      </div>
+    </div>
+
+    <div class="message-box" id="messageBox"></div>
+
+    <!-- Settings Panel -->
+    <div class="settings-panel" id="settingsPanel">
+      <div class="info">
+        <label for="userName">Change Name:</label>
+        <input type="text" id="userName" />
+        <button id="updateNameBtn">Update Name</button>
+      </div>
+
+      <div class="info">
+        <label for="newEmail">Change Email:</label>
+        <input type="email" id="newEmail" />
+        <button id="changeEmailBtn">Change Email</button>
+      </div>
+
+      <div class="info">
+        <label for="newPassword">New Password:</label>
+        <input type="password" id="newPassword" />
+        <div class="password-strength" id="passwordStrength">Strength: </div>
+        <button id="changePasswordBtn">Change Password</button>
+      </div>
+
+      <button class="settings-btn delete-btn" id="deleteAccountBtn"><i class="fas fa-user-slash"></i> Delete
+        Account</button>
+    </div>
+
+    <!-- Orders -->
+    <div class="orders">
+      <h2><i class="fas fa-box"></i> Order History</h2>
+      <ul id="orderList">
+        <li>Loading orders...</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Custom Confirm Modal -->
+  <div class="confirm-modal" id="confirmModal">
+    <div class="confirm-box">
+      <h3>Are you sure you want to delete your account?</h3>
+      <button class="confirm-yes" id="confirmYes">Yes, Delete</button>
+      <button class="confirm-no" id="confirmNo">Cancel</button>
+    </div>
+  </div>
+
+  <!-- Firebase Scripts -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
+    import {
+      getAuth, onAuthStateChanged, updatePassword, updateEmail,
+      deleteUser, signOut
+    } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
+    import {
+      getDatabase, ref, onValue, remove, set
+    } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-database.js";
+
+    const app = initializeApp({
+      apiKey: "AIzaSyBNCTc5RIZoPWM10DbrQLT8u9npPoNDyWM",
+      authDomain: "gadget-nepal-2f95b.firebaseapp.com",
+      projectId: "gadget-nepal-2f95b",
+      storageBucket: "gadget-nepal-2f95b.appspot.com",
+      messagingSenderId: "467012972292",
+      appId: "1:467012972292:web:ca9ec2130c23b2ee56aa51"
+    });
+
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+
+    const userNameInput = document.getElementById("userName");
+    const userEmailInput = document.getElementById("newEmail");
+    const newPasswordInput = document.getElementById("newPassword");
+    const passwordStrength = document.getElementById("passwordStrength");
+    const userImage = document.getElementById("userImage");
+    const uploadImg = document.getElementById("uploadImg");
+    const orderList = document.getElementById("orderList");
+    const displayName = document.getElementById("displayName");
+    const displayEmail = document.getElementById("displayEmail");
+    const messageBox = document.getElementById("messageBox");
+    const settingsPanel = document.getElementById("settingsPanel");
+
+    const confirmModal = document.getElementById("confirmModal");
+    const confirmYes = document.getElementById("confirmYes");
+    const confirmNo = document.getElementById("confirmNo");
+
+    let userData = {};
+    let currentUser = null;
+
+    function showMessage(msg, type = "success") {
+      messageBox.textContent = msg;
+      messageBox.className = `message-box ${type}`;
+      messageBox.style.display = "block";
+      setTimeout(() => messageBox.style.display = "none", 4000);
+    }
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user) return window.location.href = "auth.html";
+      currentUser = user;
+      const uid = user.uid;
+      displayEmail.textContent = user.email;
+
+      const userRef = ref(db, `users/${uid}`);
+      onValue(userRef, (snapshot) => {
+        const data = snapshot.val();
+        userData = data || {};
+        displayName.textContent = data?.name || "No name";
+        userNameInput.value = data?.name || "";
+        userImage.src = data?.image && data.image !== "default" ? data.image : "/assests/user.png";
+      });
+
+      const ordersRef = ref(db, `orders/${uid}`);
+      onValue(ordersRef, (snapshot) => {
+        const data = snapshot.val();
+        orderList.innerHTML = '';
+        if (data) {
+          Object.entries(data).forEach(([id, order]) => {
+            const li = document.createElement("li");
+            li.innerHTML = `
+              <strong>Order #${id}</strong><br/>
+              ${order.productName || "Unknown Product"} - Rs ${order.price}<br/>
+              <small>${new Date(order.timestamp || Date.now()).toLocaleString()}</small>
+            `;
+            orderList.appendChild(li);
+          });
+        } else {
+          orderList.innerHTML = "<li>No orders found.</li>";
+        }
+      });
+
+      uploadImg.addEventListener("change", () => {
+        const file = uploadImg.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const imgData = e.target.result;
+          userImage.src = imgData;
+          set(ref(db, `users/${uid}`), {
+            name: userData.name || "User",
+            email: user.email,
+            image: imgData
+          });
+          showMessage("Profile image updated.");
+        };
+        reader.readAsDataURL(file);
+      });
+    });
+
+    // Toggle Settings Panel
+    document.getElementById("settingsBtn").onclick = () => {
+      settingsPanel.style.display = settingsPanel.style.display === "flex" ? "none" : "flex";
+    };
+
+    // Logout
+    document.getElementById("logoutBtn").onclick = () => {
+      signOut(auth).then(() => {
+        localStorage.removeItem("loggedInUser");
+        window.location.href = "auth.html";
+      });
+    };
+
+    // Update Name
+    document.getElementById("updateNameBtn").onclick = () => {
+      if (!currentUser || !userNameInput.value.trim()) return;
+      set(ref(db, `users/${currentUser.uid}`), {
+        name: userNameInput.value.trim(),
+        email: currentUser.email,
+        image: userData.image || "default"
+      }).then(() => showMessage("Name updated."));
+    };
+
+    // Update Email
+    document.getElementById("changeEmailBtn").onclick = () => {
+      const newEmail = userEmailInput.value.trim();
+      if (!currentUser || !newEmail) return;
+      updateEmail(currentUser, newEmail).then(() => {
+        set(ref(db, `users/${currentUser.uid}`), {
+          name: userData.name || "User",
+          email: newEmail,
+          image: userData.image || "default"
+        });
+        displayEmail.textContent = newEmail;
+        showMessage("Email updated.");
+      }).catch(err => showMessage(err.message, "error"));
+    };
+
+    // Password Strength Checker
+    newPasswordInput.addEventListener("input", () => {
+      const val = newPasswordInput.value;
+      let strength = "Weak", color = "red";
+      if (val.length > 7 && /[A-Z]/.test(val) && /\d/.test(val)) {
+        strength = "Strong"; color = "green";
+      } else if (val.length > 5) {
+        strength = "Moderate"; color = "orange";
+      }
+      passwordStrength.textContent = `Strength: ${strength}`;
+      passwordStrength.style.color = color;
+    });
+
+    // Change Password
+    document.getElementById("changePasswordBtn").onclick = () => {
+      const newPass = newPasswordInput.value;
+      if (!currentUser || !newPass) return;
+      updatePassword(currentUser, newPass).then(() => {
+        showMessage("Password changed.");
+      }).catch(err => showMessage(err.message, "error"));
+    };
+
+    // Delete Account (modal open)
+    document.getElementById("deleteAccountBtn").onclick = () => {
+      confirmModal.style.display = "flex";
+    };
+
+    // Modal Cancel
+    confirmNo.onclick = () => {
+      confirmModal.style.display = "none";
+    };
+
+    // Modal Confirm Yes
+    confirmYes.onclick = () => {
+      if (!currentUser) return;
+      const uid = currentUser.uid;
+      remove(ref(db, `users/${uid}`));
+      remove(ref(db, `orders/${uid}`));
+      deleteUser(currentUser).then(() => {
+        showMessage("Account deleted.", "success");
+        confirmModal.style.display = "none";
+        setTimeout(() => window.location.href = "auth.html", 1500);
+      }).catch(err => showMessage(err.message, "error"));
+    };
+  </script>
+</body>
+
+</html>
